@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 
 import type {InsertTimeEntry} from "~/shared/types/time-entry.ts";
+import type {TimeRange} from "sit-onyx";
 
 const userId = 7
 const savedTimes = await useFetch('/api/times', {query: {start: "2026-09-01", end: "2026-10-31", userId}})
@@ -18,10 +19,10 @@ const times = useState<InsertTimeEntry[]>(() => defaultValue)
 
 function getEvent(date: Date) {
   const dateString = date.toISOString().slice(0, 10)
-  return times.value.find(t => t.date == dateString )
+  const entry =  times.value.find(t => t.date == dateString )
 }
 
-function handleEndChange( idx: number, value?: string,) {
+function handleEndChange( idx: number, value?: string| TimeRange,) {
   if (value && idx == times.value.length - 1)
     times.value.push({...emptyTimeEntry})
 }
