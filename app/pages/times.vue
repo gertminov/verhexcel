@@ -1,32 +1,52 @@
 <script lang="ts" setup>
 
-import type {InsertTimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
+import type {InsertTimeEntry, TimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
 import type {TimeRange} from "sit-onyx";
 
 const userId = 7
-const savedTimes = await useFetch('/api/times', {query: {from: "2026-09-01", to: "2026-10-31", userId} satisfies TimesQuery})
+const savedTimes = await useFetch('/api/times', {
+  query: {
+    from: "2026-09-01",
+    to: "2026-10-31",
+    userId
+  } satisfies TimesQuery
+})
 
 
-const today = new Date().toISOString().slice(0, 10)
-const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: today}
+const selectedDate = useState<Date>(() => new Date())
+watchEffect(() => console.log("selectedDate: ", selectedDate.value))
 
-const defaultValue: InsertTimeEntry[] = savedTimes.data.value && savedTimes.data.value.length > 0
-    ? [...getForDay(new Date(), savedTimes.data.value), emptyTimeEntry]
-    : [emptyTimeEntry]
+function toISOString(date: Date) {
+  return date.toISOString().slice(0, 10)
+}
 
-const times = useState<InsertTimeEntry[]>(() => defaultValue)
+const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: toISOString(selectedDate.value)}
+
+const serverTimes: TimeEntry[] = savedTimes.data.value ?? []
 
 
-function getEvent(date: Date) {
-  const entry = getForDay(date, times.value)
+const times = useState<InsertTimeEntry[]>(() => getTimesForDay(selectedDate.value))
+
+
+function getTimesForDay(date: Date) {
+ return  [...getForDay(date, serverTimes), emptyTimeEntry]
+}
+
+function handleDateChange(date: Date) {
+  console.log("date: ", date.toISOString())
+  times.value = getTimesForDay(date)
+}
+
+function getHoursForDay(date: Date) {
+  const entry = getForDay(date, serverTimes)
       .map(t => parseHours(t.start, t.end))
       .reduce(sumHours, 0)
   return entry > 0 ? entry : undefined
 }
 
-function getForDay(date: Date, times: InsertTimeEntry[]) {
-  const dateString = date.toISOString().slice(0, 10)
-  return times.filter(t => t.date == dateString)
+function getForDay(date: Date, timesList: InsertTimeEntry[]) {
+  const dateString = toISOString(date)
+  return timesList.filter(t => t.date == dateString)
 }
 
 function handleEndChange(idx: number, value?: string | TimeRange,) {
@@ -63,11 +83,11 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
 
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
     <div>
-      <OnyxCalendar size="small" selectionMode="single" style="max-width: 500px;">
+      <OnyxCalendar v-model="selectedDate" @update:modelValue="handleDateChange" size="small" selectionMode="single" style="max-width: 500px;">
         <template #day="{ date, size }">
           <div class="w-full flex justify-center items-center">
             <span class="h-4">
-          {{ getEvent(date) }}
+          {{ getHoursForDay(date) }}
             </span>
           </div>
         </template>
@@ -83,7 +103,7 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
         </span>
       </div>
       <div class="flex flex-col gap-2">
-        <template v-for="(time, index) in times" :key="index">
+        <template v-for="(time, index) in times" :key="time.start + time.end">
           <div class="flex gap-4">
             <OnyxUnstableTimePicker v-model="time.start" label="start" class="flex-1"/>
             <OnyxUnstableTimePicker v-model="time.end" label="end" class="flex-1"
