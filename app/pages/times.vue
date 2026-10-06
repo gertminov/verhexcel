@@ -79,6 +79,17 @@ function breaks(entries: SimpleTimeEntry[]) {
 
 const workingTime = computed(() => times.value.map(t => parseHours(t.start, t.end)).reduce(sumHours, 0))
 const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
+
+async function saveDay() {
+  await useFetch("/api/times", {
+    method: "PUT",
+    body: {
+      userId,
+      date: toISOString(selectedDate.value),
+      entries: times.value
+    }
+  })
+}
 </script>
 
 <template>
@@ -116,7 +127,7 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
     </div>
     <template #footer>
       <div class="">
-        <OnyxButton label="Save" class="w-full">Save</OnyxButton>
+        <OnyxButton @click="saveDay()" label="Save" class="w-full">Save</OnyxButton>
       </div>
     </template>
   </OnyxPageLayout>
