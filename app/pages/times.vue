@@ -1,121 +1,87 @@
 <script lang="ts" setup>
 
-import type {InsertTimeEntry, TimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
+import type {TimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
 import type {DateValue, TimeRange} from "sit-onyx";
+import {inspect} from "~~/utils/inspect.ts";
+import {filterByDay, getNextWorkingDay, toISODate} from "~~/utils/date.ts";
+import {calcBreaks, parseHours, type SimpleTimeEntry, sumHours} from "~~/utils/time.ts";
 
 definePageMeta({
   middleware: ['auth']
 })
 
 const viewMonth = useState<DateValue>(() => new Date())
-const query = computed(() => {
+const selectedDate = useState<Date>(() => new Date())
+
+
+const query = computed<TimesQuery>(() => {
   const d = new Date(viewMonth.value)
+  const year = d.getFullYear()
+  const month = d.getMonth()
   return {
-    from: toISOString(new Date(d.getFullYear(), d.getMonth(), 1)),
-    to: toISOString(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
-  } satisfies TimesQuery
+    from: toISODate(new Date(year, month, 1)),
+    to: toISODate(new Date(year, month + 1, 0)),
+  }
 })
 const savedTimes = await useFetch('/api/times', {query})
 
-
-const selectedDate = useState<Date>(() => new Date())
-
-function toISOString(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
-}
-
-const emptyTimeEntry: () =>SimpleTimeEntry = () =>  ({start: '', end: '',  date: toISOString(selectedDate.value)})
+const emptyTimeEntry: () => SimpleTimeEntry = () => ({start: '', end: '', date: toISODate(selectedDate.value)})
 
 const serverTimes = computed<TimeEntry[]>(() => savedTimes.data.value ?? [])
 
 
-const times = useState<SimpleTimeEntry[]>(() => getTimesForDay(selectedDate.value))
+const times = useState<SimpleTimeEntry[]>(() => getTimesForDay(selectedDate.value, serverTimes.value))
+
+const workingTime = computed(() => times.value.map(t => parseHours(t.start, t.end)).reduce(sumHours, 0))
+const breakTime = computed(() => calcBreaks(times.value).reduce(sumHours, 0))
 
 
-function getTimesForDay(date: Date) {
-  return [...getForDay(date, serverTimes.value), emptyTimeEntry()]
+function getTimesForDay(date: Date, timesList: SimpleTimeEntry[]) {
+  return [...filterByDay(date, timesList), emptyTimeEntry()]
 }
 
-function handleDateChange(date: Date) {
-  times.value = getTimesForDay(date)
-}
 
 function getHoursForDay(date: Date) {
-  const entry = getForDay(date, serverTimes.value)
+  const entry = filterByDay(date, serverTimes.value)
       .map(t => parseHours(t.start, t.end))
       .reduce(sumHours, 0)
-  return entry > 0 ? entry : undefined
+
+  return entry > 0 ? entry.toFixed(2) : undefined
 }
 
-function getForDay(date: Date, timesList: SimpleTimeEntry[]) {
-  const dateString = toISOString(date)
-  return timesList.filter(t => t.date == dateString)
-}
 
-function handleEndChange(idx: number, value?: string | TimeRange,) {
+function handleEndTimeChange(idx: number, value?: string | TimeRange,) {
   if (value && idx == times.value.length - 1)
     times.value.push({...emptyTimeEntry()})
 }
 
-function toHours(value: string) {
-  const [h, m = '0'] = value.split(':')
-  return parseFloat(h!) + parseFloat(m) / 60
+async function handleSave() {
+  selectedDate.value = getNextWorkingDay(selectedDate.value)
 }
 
-function parseHours(from: string, to: string) {
-  const h = toHours(to) - toHours(from)
-  return Number.isNaN(h) ? 0 : h
-}
+watch(selectedDate, async (newDate, oldDate) => {
+  await saveDay(oldDate, times.value)
+  times.value = getTimesForDay(newDate, serverTimes.value)
+})
 
-function sumHours(acc: number, hours: number) {
-  return acc + hours
-}
-
-type SimpleTimeEntry = { start: string, end: string, date: string }
-
-function breaks(entries: SimpleTimeEntry[]) {
-  const result: number[] = []
-  for (let i = 1; i < entries.length; i++) {
-    const previous = entries[i - 1]!
-    const current = entries[i]!
-    result.push(parseHours(previous.end, current.start))
-  }
-  return result
-}
-
-const workingTime = computed(() => times.value.map(t => parseHours(t.start, t.end)).reduce(sumHours, 0))
-const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
-
-async function saveDay() {
+async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
   await $fetch("/api/times", {
     method: "PUT",
     body: {
-      date: toISOString(selectedDate.value),
-      entries: times.value.filter(t => t.start && t.end)
+      date: toISODate(date),
+      entries: timeEntries.filter(t => t.start && t.end)
     }
   })
   await savedTimes.refresh()
-  selectedDate.value = selectNextDay(selectedDate.value)
 }
 
-function selectNextDay(today: Date) {
-  const d = new Date(today)
-  if (d.getDay() == 5)
-    d.setDate(d.getDate() + 3)
-  else if (d.getDay() == 6) // weekends
-    d.setDate(d.getDate() + 2)
-  else
-    d.setDate(d.getDate() + 1)
-  return d
-}
 </script>
 
 <template>
 
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
     <div>
-      <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth" @update:modelValue="handleDateChange"
+      <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth"
                     size="small" selectionMode="single" style="max-width: 500px;">
         <template #day="{ date, size }">
           <div class="w-full flex justify-center items-center relative">
@@ -140,14 +106,14 @@ function selectNextDay(today: Date) {
           <div class="flex gap-4">
             <OnyxUnstableTimePicker v-model="time.start" label="start" class="flex-1"/>
             <OnyxUnstableTimePicker v-model="time.end" label="end" class="flex-1"
-                                    @update:modelValue="(e) => handleEndChange( index, e)"/>
+                                    @update:modelValue="(e) => handleEndTimeChange( index, e)"/>
           </div>
         </template>
       </div>
     </div>
     <template #footer>
       <div class="">
-        <OnyxButton @click="saveDay()" label="Save" class="w-full">Save</OnyxButton>
+        <OnyxButton @click="handleSave()" label="Save" class="w-full">Save</OnyxButton>
       </div>
     </template>
   </OnyxPageLayout>

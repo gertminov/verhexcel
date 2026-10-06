@@ -1,10 +1,29 @@
-// "8" -> "08:00", "830" -> "08:30", "1230" -> "12:30", "12:15" -> "12:15". Invalid -> undefined.
-export function parseTime(input: string) {
-  const digits = input.replace(/\D/g, '')
-  if (!digits || digits.length > 4) return undefined
-  const split = digits.length <= 2 ? digits.length : digits.length - 2
-  const h = Number(digits.slice(0, split))
-  const m = Number(digits.slice(split) || 0)
-  if (h > 23 || m > 59) return undefined
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+
+//09:30 -> 9.5
+function toHours(value: string) {
+  const [h, m = '0'] = value.split(':')
+  return parseFloat(h!) + parseFloat(m) / 60
 }
+
+export function parseHours(from: string, to: string) {
+  const h = toHours(to) - toHours(from)
+  return Number.isNaN(h) ? 0 : h
+}
+
+
+export function sumHours(acc: number, hours: number) {
+  return acc + hours
+}
+
+
+export function calcBreaks(entries: SimpleTimeEntry[]) {
+  const result: number[] = []
+  for (let i = 1; i < entries.length; i++) {
+    const previous = entries[i - 1]!
+    const current = entries[i]!
+    result.push(parseHours(previous.end, current.start))
+  }
+  return result
+}
+
+export type SimpleTimeEntry = { start: string, end: string, date: string }
