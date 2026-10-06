@@ -18,12 +18,12 @@ async function submit() {
 <template>
   <OnyxPageLayout>
     <OnyxForm>
-      
+      <OnyxInput label="Email" type="email" v-model="form.email" />
+      <OnyxInput label="Password" type="password" v-model="form.password" />
+      <OnyxButton @click="submit">Login</OnyxButton>/>
     </OnyxForm>
   </OnyxPageLayout>
   <form class="mx-auto flex max-w-xs flex-col gap-2 p-4" @submit.prevent="submit">
-    <input v-if="register" v-model="form.name" placeholder="Name" required>
-    <input v-model="form.email" type="email" placeholder="Email" required>
     <input v-model="form.password" type="password" placeholder="Password" required>
     <button type="submit">{{ register ? 'Register' : 'Log in' }}</button>
     <button type="button" @click="register = !register">{{ register ? 'Have an account?' : 'Need an account?' }}</button>
