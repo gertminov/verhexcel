@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 
-import type {InsertTimeEntry} from "~/shared/types/time-entry.ts";
+import type {InsertTimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
 import type {TimeRange} from "sit-onyx";
 
 const userId = 7
-const savedTimes = await useFetch('/api/times', {query: {from: "2026-09-01", to: "2026-10-31", userId}})
+const savedTimes = await useFetch('/api/times', {query: {from: "2026-09-01", to: "2026-10-31", userId} satisfies TimesQuery})
 
 
 const today = new Date().toISOString().slice(0, 10)

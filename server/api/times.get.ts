@@ -1,16 +1,9 @@
 import { and, asc, between, eq } from 'drizzle-orm'
-import { z } from 'zod'
-import { times,  } from '../db/schema'
-import {TimeEntry} from "~/shared/types/time-entry.ts";
-
-const query = z.object({
-  userId: z.coerce.number().int(),
-  from: z.iso.date(),
-  to: z.iso.date(),
-})
+import { times } from '../db/schema'
+import { type TimeEntry, timesQuery } from "~/shared/types/time-entry.ts";
 
 export default defineEventHandler(async (event): Promise<TimeEntry[]> => {
-  const { userId, from, to } = await getValidatedQuery(event, query.parse)
+  const { userId, from, to } = await getValidatedQuery(event, timesQuery.parse)
   console.log("args: ", userId, from, to, "")
 
   const res = await  db.select().from(times)
