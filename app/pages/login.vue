@@ -18,10 +18,10 @@ async function submit() {
 
     <div class="min-h-screen  flex flex-col justify-center px-4  ">
       <h2 class="py-4">Login</h2>
-      <OnyxForm class="flex flex-col gap-4">
+      <OnyxForm class="flex flex-col gap-4" @submit.prevent="submit">
         <OnyxInput label="Email" type="email" v-model="form.email" />
         <OnyxInput label="Password" type="password" v-model="form.password" />
-        <OnyxButton class="w-full mt-4" label="Login" @click="submit" type="submit">Login</OnyxButton>
+        <OnyxButton class="w-full mt-4" label="Login" type="submit">Login</OnyxButton>
       </OnyxForm>
       <div class="mt-4">
         Not registered yet?
