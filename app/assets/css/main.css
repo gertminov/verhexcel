@@ -1,0 +1,7 @@
+@layer theme, base, components, utilities;
+
+/* Import theme defaults (color scales, spacing rules, etc.) */
+@import "tailwindcss/theme" layer(theme);
+
+/* Import layout & utility classes (flex, h-*, w-*, block, grid, etc.) */
+@import "tailwindcss/utilities" layer(utilities);
