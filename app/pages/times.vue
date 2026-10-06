@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 
 import type {InsertTimeEntry, TimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
-import type {TimeRange} from "sit-onyx";
+import type {DateValue, TimeRange} from "sit-onyx";
 
 const userId = 7
-const savedTimes = await useFetch('/api/times', {
-  query: {
-    from: "2026-09-01",
-    to: "2026-10-31",
+const viewMonth = ref<DateValue>(new Date())
+const query = computed(() => {
+  const d = new Date(viewMonth.value)
+  return {
+    from: toISOString(new Date(d.getFullYear(), d.getMonth(), 1)),
+    to: toISOString(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
     userId
   } satisfies TimesQuery
 })
+const savedTimes = await useFetch('/api/times', {query})
 
 
 const selectedDate = useState<Date>(() => new Date())
@@ -22,14 +25,14 @@ function toISOString(date: Date) {
 
 const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: toISOString(selectedDate.value)}
 
-const serverTimes: TimeEntry[] = savedTimes.data.value ?? []
+const serverTimes = computed<TimeEntry[]>(() => savedTimes.data.value ?? [])
 
 
 const times = useState<InsertTimeEntry[]>(() => getTimesForDay(selectedDate.value))
 
 
 function getTimesForDay(date: Date) {
- return  [...getForDay(date, serverTimes), emptyTimeEntry]
+ return  [...getForDay(date, serverTimes.value), emptyTimeEntry]
 }
 
 function handleDateChange(date: Date) {
@@ -37,7 +40,7 @@ function handleDateChange(date: Date) {
 }
 
 function getHoursForDay(date: Date) {
-  const entry = getForDay(date, serverTimes)
+  const entry = getForDay(date, serverTimes.value)
       .map(t => parseHours(t.start, t.end))
       .reduce(sumHours, 0)
   return entry > 0 ? entry : undefined
@@ -82,7 +85,7 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
 
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
     <div>
-      <OnyxCalendar v-model="selectedDate" @update:modelValue="handleDateChange" size="small" selectionMode="single" style="max-width: 500px;">
+      <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth" @update:modelValue="handleDateChange" size="small" selectionMode="single" style="max-width: 500px;">
         <template #day="{ date, size }">
           <div class="w-full flex justify-center items-center">
             <span class="h-4">
