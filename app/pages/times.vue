@@ -7,7 +7,6 @@ definePageMeta({
   middleware: ['auth']
 })
 
-const userId = 7
 const viewMonth = useState<DateValue>(() => new Date())
 const query = computed(() => {
   const d = new Date(viewMonth.value)
@@ -26,12 +25,12 @@ function toISOString(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-const emptyTimeEntry: () =>InsertTimeEntry = () =>  ({start: '', end: '', userId: userId, date: toISOString(selectedDate.value)})
+const emptyTimeEntry: () =>SimpleTimeEntry = () =>  ({start: '', end: '',  date: toISOString(selectedDate.value)})
 
 const serverTimes = computed<TimeEntry[]>(() => savedTimes.data.value ?? [])
 
 
-const times = useState<InsertTimeEntry[]>(() => getTimesForDay(selectedDate.value))
+const times = useState<SimpleTimeEntry[]>(() => getTimesForDay(selectedDate.value))
 
 
 function getTimesForDay(date: Date) {
@@ -49,7 +48,7 @@ function getHoursForDay(date: Date) {
   return entry > 0 ? entry : undefined
 }
 
-function getForDay(date: Date, timesList: InsertTimeEntry[]) {
+function getForDay(date: Date, timesList: SimpleTimeEntry[]) {
   const dateString = toISOString(date)
   return timesList.filter(t => t.date == dateString)
 }
@@ -68,7 +67,7 @@ function sumHours(acc: number, hours: number) {
   return acc + hours
 }
 
-type SimpleTimeEntry = { start: string, end: string }
+type SimpleTimeEntry = { start: string, end: string, date: string }
 
 function breaks(entries: SimpleTimeEntry[]) {
   const result: number[] = []
@@ -87,7 +86,6 @@ async function saveDay() {
   await $fetch("/api/times", {
     method: "PUT",
     body: {
-      userId,
       date: toISOString(selectedDate.value),
       entries: times.value.filter(t => t.start && t.end)
     }

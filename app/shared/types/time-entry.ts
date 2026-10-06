@@ -11,7 +11,6 @@ export const timesQuery = z.object({
 export type TimesQuery = z.input<typeof timesQuery>
 
 export const saveDayBody = z.object({
-  userId: z.number().int(),
   date: z.iso.date(),
   entries: z.array(z.object({ start: z.string(), end: z.string() })),
 })
