@@ -1,13 +1,12 @@
 <script setup lang="ts">
 const { fetch } = useUserSession()
-const register = ref(false)
-const form = reactive({ name: '', email: '', password: '' })
-const error = ref('')
+const form = reactive({ email: '', password: '' })
+const error = useState(() => '')
 
 async function submit() {
   error.value = ''
   try {
-    await $fetch(register.value ? '/api/register' : '/api/login', { method: 'POST', body: form })
+    await $fetch( '/api/login', { method: 'POST', body: form })
     await fetch()
     await navigateTo('/times')
   } catch (e: any) {
@@ -16,17 +15,17 @@ async function submit() {
 }
 </script>
 <template>
-  <OnyxPageLayout>
-    <OnyxForm>
-      <OnyxInput label="Email" type="email" v-model="form.email" />
-      <OnyxInput label="Password" type="password" v-model="form.password" />
-      <OnyxButton @click="submit">Login</OnyxButton>/>
-    </OnyxForm>
-  </OnyxPageLayout>
-  <form class="mx-auto flex max-w-xs flex-col gap-2 p-4" @submit.prevent="submit">
-    <input v-model="form.password" type="password" placeholder="Password" required>
-    <button type="submit">{{ register ? 'Register' : 'Log in' }}</button>
-    <button type="button" @click="register = !register">{{ register ? 'Have an account?' : 'Need an account?' }}</button>
-    <p v-if="error">{{ error }}</p>
-  </form>
+
+    <div class="min-h-screen  flex flex-col justify-center px-4  ">
+      <h2 class="py-4">Login</h2>
+      <OnyxForm class="flex flex-col gap-4">
+        <OnyxInput label="Email" type="email" v-model="form.email" />
+        <OnyxInput label="Password" type="password" v-model="form.password" />
+        <OnyxButton class="w-full mt-4" label="Login" @click="submit" type="submit">Login</OnyxButton>
+      </OnyxForm>
+      <div class="mt-4">
+        Not registered yet?
+        <NuxtLink to="/register" class="text-sm mt-4">Register</NuxtLink>
+      </div>
+    </div>
 </template>

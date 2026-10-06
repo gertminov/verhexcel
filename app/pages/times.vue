@@ -3,6 +3,10 @@
 import type {InsertTimeEntry, TimeEntry, TimesQuery} from "~/shared/types/time-entry.ts";
 import type {DateValue, TimeRange} from "sit-onyx";
 
+definePageMeta({
+  middleware: ['auth']
+})
+
 const userId = 7
 const viewMonth = useState<DateValue>(() => new Date())
 const query = computed(() => {
@@ -10,7 +14,6 @@ const query = computed(() => {
   return {
     from: toISOString(new Date(d.getFullYear(), d.getMonth(), 1)),
     to: toISOString(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
-    userId
   } satisfies TimesQuery
 })
 const savedTimes = await useFetch('/api/times', {query})
