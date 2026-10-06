@@ -1,21 +1,29 @@
 <script lang="ts" setup>
-const greeting = 'Hello World'
+
+import type {InsertTimeEntry} from "~/shared/types/time-entry.ts";
+
+const userId = 7
+const savedTimes = await useFetch('/api/times', {query: {start: "2026-09-01", end: "2026-10-31", userId}})
+
+
+const today = new Date().toISOString().slice(0, 10)
+const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: today}
+
+const defaultValue: InsertTimeEntry[] = savedTimes.data.value && savedTimes.data.value.length > 0 ? savedTimes.data.value : [
+  emptyTimeEntry
+]
+
+const times = useState<InsertTimeEntry[]>(() => defaultValue)
+
 
 function getEvent(date: Date) {
-  return date.getDate() % 4 == 0 && date.getDay() % 6 != 0 ? '8h' : undefined
+  const dateString = date.toISOString().slice(0, 10)
+  return times.value.find(t => t.date == dateString )
 }
-
-type TimeEntry = {
-  start: string,
-  end: string
-}
-const times = useState<TimeEntry[]>(() => [
-  {start: '', end: ''}
-])
 
 function handleEndChange( idx: number, value?: string,) {
   if (value && idx == times.value.length - 1)
-    times.value.push({start: '', end: ''})
+    times.value.push({...emptyTimeEntry})
 }
 
 function parseHours(from: string, to: string) {
@@ -27,7 +35,9 @@ function sumHours(acc: number, hours: number) {
   return acc + hours
 }
 
-function breaks(entries: TimeEntry[]) {
+type SimpleTimeEntry = { start: string, end: string }
+
+function breaks(entries: SimpleTimeEntry[]) {
   const result: number[] = []
   for (let i = 1; i < entries.length; i++) {
     const previous = entries[i - 1]!
