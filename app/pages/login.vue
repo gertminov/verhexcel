@@ -16,6 +16,11 @@ async function submit() {
 }
 </script>
 <template>
+  <OnyxPageLayout>
+    <OnyxForm>
+      
+    </OnyxForm>
+  </OnyxPageLayout>
   <form class="mx-auto flex max-w-xs flex-col gap-2 p-4" @submit.prevent="submit">
     <input v-if="register" v-model="form.name" placeholder="Name" required>
     <input v-model="form.email" type="email" placeholder="Email" required>
