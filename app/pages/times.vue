@@ -17,7 +17,8 @@ const selectedDate = useState<Date>(() => new Date())
 watchEffect(() => console.log("selectedDate: ", selectedDate.value))
 
 function toISOString(date: Date) {
-  return date.toISOString().slice(0, 10)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
 const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: toISOString(selectedDate.value)}
