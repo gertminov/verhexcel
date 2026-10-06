@@ -14,7 +14,6 @@ const savedTimes = await useFetch('/api/times', {
 
 
 const selectedDate = useState<Date>(() => new Date())
-watchEffect(() => console.log("selectedDate: ", selectedDate.value))
 
 function toISOString(date: Date) {
   const pad = (n: number) => String(n).padStart(2, '0')
@@ -34,7 +33,6 @@ function getTimesForDay(date: Date) {
 }
 
 function handleDateChange(date: Date) {
-  console.log("date: ", date.toISOString())
   times.value = getTimesForDay(date)
 }
 
