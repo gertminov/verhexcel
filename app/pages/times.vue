@@ -26,7 +26,7 @@ function toISOString(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: toISOString(selectedDate.value)}
+const emptyTimeEntry: () =>InsertTimeEntry = () =>  ({start: '', end: '', userId: userId, date: toISOString(selectedDate.value)})
 
 const serverTimes = computed<TimeEntry[]>(() => savedTimes.data.value ?? [])
 
@@ -35,7 +35,7 @@ const times = useState<InsertTimeEntry[]>(() => getTimesForDay(selectedDate.valu
 
 
 function getTimesForDay(date: Date) {
-  return [...getForDay(date, serverTimes.value), emptyTimeEntry]
+  return [...getForDay(date, serverTimes.value), emptyTimeEntry()]
 }
 
 function handleDateChange(date: Date) {
@@ -56,7 +56,7 @@ function getForDay(date: Date, timesList: InsertTimeEntry[]) {
 
 function handleEndChange(idx: number, value?: string | TimeRange,) {
   if (value && idx == times.value.length - 1)
-    times.value.push({...emptyTimeEntry})
+    times.value.push({...emptyTimeEntry()})
 }
 
 function parseHours(from: string, to: string) {

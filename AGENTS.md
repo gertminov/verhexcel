@@ -3,7 +3,6 @@ You are assisting another senior developer. He has all the context for the proje
 
 ## General Rules
 - always check for uncommited changes before you make any changes yourself. ( if there are uncommited changes, commit them)
-- always commit after you finished making changes.
 
 ## The ladder
 Stop at the first rung that holds:

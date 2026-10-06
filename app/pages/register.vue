@@ -21,7 +21,7 @@ async function submit() {
       <OnyxInput label="Name" v-model="form.name" />
       <OnyxInput label="Email" type="email" v-model="form.email" />
       <OnyxInput label="Password" type="password" v-model="form.password" />
-      <OnyxButton label="Login" type="submit">Login</OnyxButton>
+      <OnyxButton label="Register" type="submit">Register</OnyxButton>
     </OnyxForm>
   </div>
 </template>
