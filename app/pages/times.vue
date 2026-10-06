@@ -4,7 +4,7 @@ import type {InsertTimeEntry, TimeEntry, TimesQuery} from "~/shared/types/time-e
 import type {DateValue, TimeRange} from "sit-onyx";
 
 const userId = 7
-const viewMonth = ref<DateValue>(new Date())
+const viewMonth = useState<DateValue>(() => new Date())
 const query = computed(() => {
   const d = new Date(viewMonth.value)
   return {
@@ -87,8 +87,8 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
     <div>
       <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth" @update:modelValue="handleDateChange" size="small" selectionMode="single" style="max-width: 500px;">
         <template #day="{ date, size }">
-          <div class="w-full flex justify-center items-center">
-            <span class="h-4">
+          <div class="w-full flex justify-center items-center relative">
+            <span class="h-1 -top-1 absolute text-gray-400 text-sm">
           {{ getHoursForDay(date) }}
             </span>
           </div>
