@@ -32,7 +32,7 @@ const times = useState<InsertTimeEntry[]>(() => getTimesForDay(selectedDate.valu
 
 
 function getTimesForDay(date: Date) {
- return  [...getForDay(date, serverTimes.value), emptyTimeEntry]
+  return [...getForDay(date, serverTimes.value), emptyTimeEntry]
 }
 
 function handleDateChange(date: Date) {
@@ -90,6 +90,18 @@ async function saveDay() {
     }
   })
   await savedTimes.refresh()
+  selectedDate.value = selectNextDay(selectedDate.value)
+}
+
+function selectNextDay(today: Date) {
+  const d = new Date(today)
+  if (d.getDay() == 5)
+    d.setDate(d.getDate() + 3)
+  else if (d.getDay() == 6) // weekends
+    d.setDate(d.getDate() + 2)
+  else
+    d.setDate(d.getDate() + 1)
+  return d
 }
 </script>
 
@@ -97,7 +109,8 @@ async function saveDay() {
 
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
     <div>
-      <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth" @update:modelValue="handleDateChange" size="small" selectionMode="single" style="max-width: 500px;">
+      <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth" @update:modelValue="handleDateChange"
+                    size="small" selectionMode="single" style="max-width: 500px;">
         <template #day="{ date, size }">
           <div class="w-full flex justify-center items-center relative">
             <span class="h-1 -top-1 absolute text-gray-400 text-sm">
