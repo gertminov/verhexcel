@@ -4,25 +4,32 @@ import type {InsertTimeEntry} from "~/shared/types/time-entry.ts";
 import type {TimeRange} from "sit-onyx";
 
 const userId = 7
-const savedTimes = await useFetch('/api/times', {query: {start: "2026-09-01", end: "2026-10-31", userId}})
+const savedTimes = await useFetch('/api/times', {query: {from: "2026-09-01", to: "2026-10-31", userId}})
 
 
 const today = new Date().toISOString().slice(0, 10)
 const emptyTimeEntry: InsertTimeEntry = {start: '', end: '', userId: userId, date: today}
 
-const defaultValue: InsertTimeEntry[] = savedTimes.data.value && savedTimes.data.value.length > 0 ? savedTimes.data.value : [
-  emptyTimeEntry
-]
+const defaultValue: InsertTimeEntry[] = savedTimes.data.value && savedTimes.data.value.length > 0
+    ? [...getForDay(new Date(), savedTimes.data.value), emptyTimeEntry]
+    : [emptyTimeEntry]
 
 const times = useState<InsertTimeEntry[]>(() => defaultValue)
 
 
 function getEvent(date: Date) {
-  const dateString = date.toISOString().slice(0, 10)
-  const entry =  times.value.find(t => t.date == dateString )
+  const entry = getForDay(date, times.value)
+      .map(t => parseHours(t.start, t.end))
+      .reduce(sumHours, 0)
+  return entry > 0 ? entry : undefined
 }
 
-function handleEndChange( idx: number, value?: string| TimeRange,) {
+function getForDay(date: Date, times: InsertTimeEntry[]) {
+  const dateString = date.toISOString().slice(0, 10)
+  return times.filter(t => t.date == dateString)
+}
+
+function handleEndChange(idx: number, value?: string | TimeRange,) {
   if (value && idx == times.value.length - 1)
     times.value.push({...emptyTimeEntry})
 }
@@ -78,9 +85,9 @@ const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
       <div class="flex flex-col gap-2">
         <template v-for="(time, index) in times" :key="index">
           <div class="flex gap-4">
-            <OnyxUnstableTimePicker v-model="time.start" label="start" class="flex-1" />
+            <OnyxUnstableTimePicker v-model="time.start" label="start" class="flex-1"/>
             <OnyxUnstableTimePicker v-model="time.end" label="end" class="flex-1"
-                                   @update:modelValue="(e) => handleEndChange( index, e)"/>
+                                    @update:modelValue="(e) => handleEndChange( index, e)"/>
           </div>
         </template>
       </div>

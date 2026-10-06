@@ -11,8 +11,11 @@ const query = z.object({
 
 export default defineEventHandler(async (event): Promise<TimeEntry[]> => {
   const { userId, from, to } = await getValidatedQuery(event, query.parse)
+  console.log("args: ", userId, from, to, "")
 
-  return db.select().from(times)
+  const res = await  db.select().from(times)
     .where(and(eq(times.userId, userId), between(times.date, from, to)))
     .orderBy(asc(times.date), asc(times.start))
+  console.log(res)
+  return res
 })
