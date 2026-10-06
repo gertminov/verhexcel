@@ -81,14 +81,15 @@ const workingTime = computed(() => times.value.map(t => parseHours(t.start, t.en
 const breakTime = computed(() => breaks(times.value).reduce(sumHours, 0))
 
 async function saveDay() {
-  await useFetch("/api/times", {
+  await $fetch("/api/times", {
     method: "PUT",
     body: {
       userId,
       date: toISOString(selectedDate.value),
-      entries: times.value
+      entries: times.value.filter(t => t.start && t.end)
     }
   })
+  await savedTimes.refresh()
 }
 </script>
 
