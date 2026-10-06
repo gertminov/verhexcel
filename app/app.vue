@@ -3,7 +3,14 @@
 <template>
   <OnyxAppLayout>
     <template #navBar>
-      hello
+      <OnyxNavBar
+          appName="Verhexcel"
+          mobile
+      >
+
+        <OnyxNavItem link="/times" label="Times" />
+        <OnyxNavItem link="/export" label="Export" />
+      </OnyxNavBar>
     </template>
       <NuxtPage />
   </OnyxAppLayout>

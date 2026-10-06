@@ -58,8 +58,13 @@ function handleEndChange(idx: number, value?: string | TimeRange,) {
     times.value.push({...emptyTimeEntry()})
 }
 
+function toHours(value: string) {
+  const [h, m = '0'] = value.split(':')
+  return parseFloat(h!) + parseFloat(m) / 60
+}
+
 function parseHours(from: string, to: string) {
-  const h = parseFloat(to) - parseFloat(from)
+  const h = toHours(to) - toHours(from)
   return Number.isNaN(h) ? 0 : h
 }
 
@@ -124,10 +129,10 @@ function selectNextDay(today: Date) {
     <div class="pt-4 grow">
       <div class="flex gap-4 justify-between">
         <span>
-        Time: {{ workingTime }}
+        Time: {{ workingTime.toFixed(2) }}
         </span>
         <span>
-        Break: {{ breakTime }}
+        Break: {{ breakTime.toFixed(2) }}
         </span>
       </div>
       <div class="flex flex-col gap-2">

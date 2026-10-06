@@ -23,6 +23,9 @@ async function submit() {
         <OnyxInput label="Password" type="password" v-model="form.password" />
         <OnyxButton class="w-full mt-4" label="Login" type="submit">Login</OnyxButton>
       </OnyxForm>
+      <div class="h-4">
+        {{ error }}
+      </div>
       <div class="mt-4">
         Not registered yet?
         <NuxtLink to="/register" class="text-sm mt-4">Register</NuxtLink>
