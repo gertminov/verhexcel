@@ -17,6 +17,7 @@ cp .env.example .env
 
 - `NUXT_SESSION_PASSWORD`: random string, min 32 chars.
 - `DEMO_TOKEN`: string that grants access to the demo account via `/demo/<DEMO_TOKEN>`.
+- `INVITE_CODE`: code required to register. Unset = registration closed.
 - `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` (optional): remote DB. Defaults to `file:local.db`.
 
 ### Database

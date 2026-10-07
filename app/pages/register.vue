@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { fetch } = useUserSession()
-const form = reactive({ name: '', email: '', password: '' })
+const form = reactive({ name: '', email: '', password: '', invite: '' })
 const error = ref('')
 
 async function submit() {
@@ -21,6 +21,7 @@ async function submit() {
       <OnyxInput label="Name" v-model="form.name" />
       <OnyxInput label="Email" type="email" v-model="form.email" />
       <OnyxInput label="Password" type="password" v-model="form.password" />
+      <OnyxInput label="Invite code" v-model="form.invite" />
       <OnyxButton label="Register" type="submit">Register</OnyxButton>
     </OnyxForm>
   </div>
