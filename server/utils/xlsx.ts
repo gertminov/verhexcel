@@ -16,7 +16,9 @@ export function setCell(
   ref: string,
   value: number | string | null,
 ) {
-  const re = new RegExp(`<c r="${ref}"( s="\\d+")?[^>/]*(?:/>|>[\\s\\S]*?</c>)`);
+  const re = new RegExp(
+    `<c r="${ref}"( s="\\d+")?[^>/]*(?:/>|>[\\s\\S]*?</c>)`,
+  );
   if (!re.test(xml)) throw new Error(`cell ${ref} missing in template`);
   return xml.replace(re, (_, style = "") => {
     if (value === null) return `<c r="${ref}"${style}/>`;

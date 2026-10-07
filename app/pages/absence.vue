@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import type {DateRange, DateValue} from "sit-onyx";
-import {absenceTypes} from "~~/server/db/schema";
-import type {AbsencesQuery, SaveAbsencesBody} from "~/shared/types/absence.ts";
-import {toISODate} from "~~/utils/date.ts";
+import type { DateRange, DateValue } from "sit-onyx";
+import { absenceTypes } from "~~/server/db/schema";
+import type {
+  AbsencesQuery,
+  SaveAbsencesBody,
+} from "~/shared/types/absence.ts";
+import { toISODate } from "~~/utils/date.ts";
 
 definePageMeta({
   middleware: ["auth"],
@@ -16,12 +19,15 @@ const query = computed<AbsencesQuery>(() => {
     to: toISODate(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
   };
 });
-const savedAbsences = await useFetch("/api/absences", {query});
+const savedAbsences = await useFetch("/api/absences", { query });
 const absenceByDate = computed(
   () => new Map(savedAbsences.data.value?.map((a) => [a.date, a.type])),
 );
 
-const selectedRange = useState<DateRange>(() => ({start: new Date(), end: new Date()}));
+const selectedRange = useState<DateRange>(() => ({
+  start: new Date(),
+  end: new Date(),
+}));
 const type = ref<SaveAbsencesBody["type"]>(null);
 const typeLabels: Record<(typeof absenceTypes)[number], string> = {
   U: "Urlaub",
@@ -30,10 +36,13 @@ const typeLabels: Record<(typeof absenceTypes)[number], string> = {
   KR: "Krank Restzeit",
   G: "Gleittag",
 };
-const typeOptions = absenceTypes.map((t) => ({value: t, label: `${t} – ${typeLabels[t]}`}));
+const typeOptions = absenceTypes.map((t) => ({
+  value: t,
+  label: `${t} – ${typeLabels[t]}`,
+}));
 
 async function save() {
-  const {start, end = start} = selectedRange.value;
+  const { start, end = start } = selectedRange.value;
   await $fetch("/api/absences", {
     method: "PUT",
     body: {
@@ -43,8 +52,8 @@ async function save() {
     } satisfies SaveAbsencesBody,
   });
   await savedAbsences.refresh();
-  selectedRange.value = {start: new Date(), end: new Date()};
-  type.value = null
+  selectedRange.value = { start: new Date(), end: new Date() };
+  type.value = null;
 }
 </script>
 
@@ -53,11 +62,11 @@ async function save() {
     <div>
       <div>
         <OnyxCalendar
-            v-model="selectedRange"
-            v-model:view-month="viewMonth"
-            small
-            selectionMode="range"
-            class="w-full max-w-xl"
+          v-model="selectedRange"
+          v-model:view-month="viewMonth"
+          small
+          selectionMode="range"
+          class="w-full max-w-xl"
         >
           <template #day="{ date }">
             <div class="w-full flex justify-center items-center relative">
@@ -70,16 +79,16 @@ async function save() {
       </div>
       <div class="mt-4">
         <OnyxSelect
-            v-model="type"
-            label="Absence type"
-            list-label="Absence types"
-            :options="typeOptions"
+          v-model="type"
+          label="Absence type"
+          list-label="Absence types"
+          :options="typeOptions"
         />
       </div>
     </div>
     <template #footer>
       <div class="px-8">
-        <OnyxButton label="Save" @click="save" class="w-full max-w-xl"/>
+        <OnyxButton label="Save" @click="save" class="w-full max-w-xl" />
       </div>
     </template>
   </OnyxPageLayout>

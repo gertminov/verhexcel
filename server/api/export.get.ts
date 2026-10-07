@@ -30,9 +30,10 @@ export default defineEventHandler(async (event) => {
       ),
     );
 
-  const template = await useStorage("assets:server").getItemRaw<Uint8Array>(
-    "stundenzettel.xlsx",
-  );
+  const template =
+    await useStorage("assets:server").getItemRaw<Uint8Array>(
+      "stundenzettel.xlsx",
+    );
   const file = fillTimesheet(
     new Uint8Array(template!),
     year,
@@ -41,7 +42,9 @@ export default defineEventHandler(async (event) => {
     absenceEntries,
   );
 
-  const filename = encodeURIComponent(`Stundenzettel_${year}_${user.name}.xlsx`);
+  const filename = encodeURIComponent(
+    `Stundenzettel_${year}_${user.name}.xlsx`,
+  );
   setResponseHeaders(event, {
     "Content-Type":
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

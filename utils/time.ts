@@ -1,5 +1,5 @@
 //09:30 -> 9.5
-import {toISODate} from "~~/utils/date.ts";
+import { toISODate } from "~~/utils/date.ts";
 
 export function toHours(value: string) {
   if (!value) return 0;
@@ -31,7 +31,11 @@ export type SimpleTimeEntry = { start: string; end: string; date: string };
 // Mon-Fri dates between from and to (inclusive), as YYYY-MM-DD
 export function weekdays(from: string, to: string) {
   const result: string[] = [];
-  for (const d = new Date(from); d <= new Date(to); d.setUTCDate(d.getUTCDate() + 1))
+  for (
+    const d = new Date(from);
+    d <= new Date(to);
+    d.setUTCDate(d.getUTCDate() + 1)
+  )
     if (d.getUTCDay() % 6) result.push(toISODate(d));
   return result;
 }

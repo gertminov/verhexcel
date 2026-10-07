@@ -6,7 +6,10 @@ import { weekdays } from "../../utils/time.ts";
 // Replaces all absences in from..to with one entry per weekday.
 export default defineEventHandler(async (event): Promise<Absence[]> => {
   const { user } = await requireUserSession(event);
-  const { from, to, type } = await readValidatedBody(event, saveAbsencesBody.parse);
+  const { from, to, type } = await readValidatedBody(
+    event,
+    saveAbsencesBody.parse,
+  );
   const wipe = db
     .delete(absences)
     .where(and(eq(absences.userId, user.id), between(absences.date, from, to)));

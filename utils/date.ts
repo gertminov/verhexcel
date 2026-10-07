@@ -9,8 +9,7 @@ export function getNextWorkingDay(today: Date) {
   const d = new Date(today);
   // skip weekends
   if (d.getDay() == 5) d.setDate(d.getDate() + 3);
-  else if (d.getDay() == 6)
-    d.setDate(d.getDate() + 2);
+  else if (d.getDay() == 6) d.setDate(d.getDate() + 2);
   else d.setDate(d.getDate() + 1);
   return d;
 }

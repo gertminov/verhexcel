@@ -46,7 +46,10 @@ for (let month = 1; month <= 12; month++) {
   const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
   for (let day = 1; day <= days; day++) {
     const date = `${year}-${pad(month)}-${pad(day)}`;
-    for (const [s, e] of [["D", "E"], ["F", "G"]]) {
+    for (const [s, e] of [
+      ["D", "E"],
+      ["F", "G"],
+    ]) {
       const start = cells[`${s}${3 + day}`];
       const end = cells[`${e}${3 + day}`];
       if (start !== undefined && end !== undefined)

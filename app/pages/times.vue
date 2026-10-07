@@ -28,7 +28,12 @@ const query = computed<TimesQuery>(() => {
 const savedTimes = await useFetch("/api/times", { query });
 const savedAbsences = await useFetch("/api/absences", { query });
 const absentDates = computed(
-  () => new Set(savedAbsences.data.value?.map((a) => a.date)),
+  () =>
+    new Set(
+      savedAbsences.data.value
+        ?.filter((a) => a.type != "UH" && a.type != "KR")
+        .map((a) => a.date),
+    ),
 );
 const isAbsent = (date: Date) => absentDates.value.has(toISODate(date));
 
@@ -67,7 +72,9 @@ function handleEndTimeChange(idx: number, value?: string | TimeRange) {
 }
 
 async function handleSave() {
-  selectedDate.value = getNextWorkingDay(selectedDate.value);
+  let next = getNextWorkingDay(selectedDate.value);
+  while (isAbsent(next)) next = getNextWorkingDay(next);
+  selectedDate.value = next;
 }
 
 watch(selectedDate, async (newDate, oldDate) => {
@@ -98,7 +105,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         :disabled="isAbsent"
         class="w-full max-w-xl"
       >
-        <template #day="{ date  }">
+        <template #day="{ date }">
           <div class="w-full flex justify-center items-center relative">
             <span class="h-1 -top-1 absolute text-gray-400 text-sm">
               {{ getHoursForDay(date) }}
@@ -113,7 +120,10 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         <span> Break: {{ breakTime.toFixed(2) }} </span>
       </div>
       <div class="flex flex-col gap-2">
-        <template v-for="(time, index) in times" :key="selectedDate.getTime() + index">
+        <template
+          v-for="(time, index) in times"
+          :key="selectedDate.getTime() + index"
+        >
           <div class="flex gap-4">
             <OnyxUnstableTimePicker
               v-model="time.start"
