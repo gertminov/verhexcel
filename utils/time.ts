@@ -8,6 +8,7 @@ export function toHours(value: string) {
 }
 
 export function parseHours(from: string, to: string) {
+  if (!from || !to) return 0;
   const h = toHours(to) - toHours(from);
   return Number.isNaN(h) ? 0 : h;
 }
