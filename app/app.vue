@@ -1,23 +1,19 @@
 <script setup lang="ts">
-const { user} = useUserSession()
+const { user } = useUserSession();
 </script>
 <template>
   <OnyxAppLayout>
     <template #navBar>
-      <OnyxNavBar
-          appName="Verhexcel"
-          mobile
-      >
-
+      <OnyxNavBar app-name="Verhexcel">
         <OnyxNavItem link="/times" label="Times" />
         <OnyxNavItem link="/export" label="Export" />
         <template #globalContextArea>
           <div class="mx-4">
-            {{user?.name}}
+            {{ user?.name }}
           </div>
         </template>
       </OnyxNavBar>
     </template>
-      <NuxtPage />
+    <NuxtPage />
   </OnyxAppLayout>
 </template>
