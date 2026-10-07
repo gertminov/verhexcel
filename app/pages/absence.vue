@@ -1,8 +1,25 @@
 <script lang="ts" setup>
-import type {DateRange} from "sit-onyx";
+import type {DateRange, DateValue} from "sit-onyx";
 import {absenceTypes} from "~~/server/db/schema";
-import type {SaveAbsencesBody} from "~/shared/types/absence.ts";
+import type {AbsencesQuery, SaveAbsencesBody} from "~/shared/types/absence.ts";
 import {toISODate} from "~~/utils/date.ts";
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
+const viewMonth = useState<DateValue>(() => new Date());
+const query = computed<AbsencesQuery>(() => {
+  const d = new Date(viewMonth.value);
+  return {
+    from: toISODate(new Date(d.getFullYear(), d.getMonth(), 1)),
+    to: toISODate(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
+  };
+});
+const savedAbsences = await useFetch("/api/absences", {query});
+const absenceByDate = computed(
+  () => new Map(savedAbsences.data.value?.map((a) => [a.date, a.type])),
+);
 
 const selectedRange = useState<DateRange>(() => ({start: new Date(), end: new Date()}));
 const type = ref<SaveAbsencesBody["type"]>(null);
@@ -25,6 +42,9 @@ async function save() {
       type: type.value,
     } satisfies SaveAbsencesBody,
   });
+  await savedAbsences.refresh();
+  selectedRange.value = {start: new Date(), end: new Date()};
+  type.value = null
 }
 </script>
 
@@ -34,10 +54,19 @@ async function save() {
       <div>
         <OnyxCalendar
             v-model="selectedRange"
+            v-model:view-month="viewMonth"
             small
             selectionMode="range"
             class="w-full max-w-xl"
-        />
+        >
+          <template #day="{ date }">
+            <div class="w-full flex justify-center items-center relative">
+              <span class="h-1 -top-1 absolute text-gray-400 text-xs">
+                {{ absenceByDate.get(toISODate(date)) }}
+              </span>
+            </div>
+          </template>
+        </OnyxCalendar>
       </div>
       <div class="mt-4">
         <OnyxSelect
