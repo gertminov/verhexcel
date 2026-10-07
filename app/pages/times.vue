@@ -27,15 +27,14 @@ const query = computed<TimesQuery>(() => {
 });
 const savedTimes = await useFetch("/api/times", { query });
 const savedAbsences = await useFetch("/api/absences", { query });
-const absentDates = computed(
-  () =>
-    new Set(
-      savedAbsences.data.value
-        ?.filter((a) => a.type != "UH" && a.type != "KR")
-        .map((a) => a.date),
-    ),
+const absenceByDate = computed(
+  () => new Map(savedAbsences.data.value?.map((a) => [a.date, a.type])),
 );
-const isAbsent = (date: Date) => absentDates.value.has(toISODate(date));
+const getAbsence = (date: Date) => absenceByDate.value.get(toISODate(date));
+const isAbsent = (date: Date) => {
+  const type = getAbsence(date);
+  return !!type && type != "UH" && type != "KR";
+};
 
 const emptyTimeEntry: () => SimpleTimeEntry = () => ({
   start: "",
@@ -108,7 +107,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         <template #day="{ date }">
           <div class="w-full flex justify-center items-center relative">
             <span class="h-1 -top-1 absolute text-gray-400 text-sm">
-              {{ getHoursForDay(date) }}
+              {{ [getAbsence(date), getHoursForDay(date)].filter(Boolean).join(" ") }}
             </span>
           </div>
         </template>
