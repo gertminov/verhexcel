@@ -12,6 +12,6 @@ export type TimesQuery = z.input<typeof timesQuery>
 
 export const saveDayBody = z.object({
   date: z.iso.date(),
-  entries: z.array(z.object({ start: z.string(), end: z.string() })),
+  entries: z.array(z.object({ start: z.iso.time(), end: z.iso.time() })).max(50),
 })
 export type SaveDayBody = z.input<typeof saveDayBody>
