@@ -1,13 +1,15 @@
 <script setup lang="ts">
-const { user } = useUserSession();
+const { user, loggedIn } = useUserSession();
 </script>
 <template>
   <OnyxAppLayout>
     <template #navBar>
       <OnyxNavBar app-name="Verhexcel">
-        <OnyxNavItem link="/times" label="Times" />
-        <OnyxNavItem link="/absence" label="Absence" />
-        <OnyxNavItem link="/export" label="Export" />
+        <template v-if="loggedIn" >
+          <OnyxNavItem link="/times" label="Times" />
+          <OnyxNavItem link="/absence" label="Absence" />
+          <OnyxNavItem link="/export" label="Export" />
+        </template>
         <template #globalContextArea>
           <div class="mx-4">
             {{ user?.name }}
