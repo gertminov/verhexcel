@@ -80,9 +80,9 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
 <template>
 
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
-    <div>
+    <div class="flex justify-center">
       <OnyxCalendar v-model="selectedDate" v-model:viewMonth="viewMonth"
-                    size="small" selectionMode="single" style="max-width: 500px;">
+                    size="small" selectionMode="single" class="w-full max-w-xl">
         <template #day="{ date, size }">
           <div class="w-full flex justify-center items-center relative">
             <span class="h-1 -top-1 absolute text-gray-400 text-sm">
@@ -92,7 +92,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         </template>
       </OnyxCalendar>
     </div>
-    <div class="pt-4 grow">
+    <div class="pt-4 grow max-w-xl mx-auto">
       <div class="flex gap-4 justify-between">
         <span>
         Time: {{ workingTime.toFixed(2) }}
@@ -112,7 +112,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
       </div>
     </div>
     <template #footer>
-      <div class="">
+      <div class="max-w-xl mx-auto">
         <OnyxButton @click="handleSave()" label="Save" class="w-full">Save</OnyxButton>
       </div>
     </template>
