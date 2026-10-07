@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const {loggedIn} = useUserSession();
-if (loggedIn) {
+if (loggedIn.value) {
   await navigateTo("/times");
 }
 </script>
