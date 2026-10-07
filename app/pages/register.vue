@@ -15,16 +15,10 @@ async function submit() {
 }
 </script>
 <template>
-  <div class="min-h-screen flex flex-col justify-center px-4">
-    <div class="w-full max-w-md mx-auto">
-      <h2 class="py-4">Register</h2>
-      <OnyxForm class="flex flex-col gap-4" @submit.prevent="submit">
-        <OnyxInput v-model="form.name" label="Name"/>
-        <OnyxInput v-model="form.email" label="Email" type="email"/>
-        <OnyxInput v-model="form.password" label="Password" type="password"/>
-        <OnyxInput v-model="form.invite" label="Invite code"/>
-        <OnyxButton label="Register" type="submit">Register</OnyxButton>
-      </OnyxForm>
-    </div>
-  </div>
+  <AuthForm title="Register" :error="error" @submit="submit">
+    <OnyxInput v-model="form.name" label="Name" />
+    <OnyxInput v-model="form.email" label="Email" type="email" />
+    <OnyxInput v-model="form.password" label="Password" type="password" />
+    <OnyxInput v-model="form.invite" label="Invite code" />
+  </AuthForm>
 </template>
