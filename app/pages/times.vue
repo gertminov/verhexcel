@@ -107,7 +107,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         <span> Break: {{ breakTime.toFixed(2) }} </span>
       </div>
       <div class="flex flex-col gap-2">
-        <template v-for="(time, index) in times" :key="time.start + time.end">
+        <template v-for="(time, index) in times" :key="selectedDate.getTime() + index">
           <div class="flex gap-4">
             <OnyxUnstableTimePicker
               v-model="time.start"
