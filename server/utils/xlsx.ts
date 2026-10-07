@@ -1,10 +1,5 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
-import {
-  calcBreaks,
-  type SimpleTimeEntry,
-  sumHours,
-  toHours,
-} from "../../utils/time.ts";
+import {calcBreaks, SimpleTimeEntry, sumHours, toHours} from "~~/utils/time.ts";
 
 const escapeXml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -74,7 +69,11 @@ export function fillTimesheet(
     });
   }
   // Absence code goes into the "Code" column J, the template derives target hours from it.
-  for (const a of absences)
-    edit(month(a) + 2, (xml) => setCell(xml, `J${row(a)}`, a.type));
+  for (const [m, monthAbsences] of Object.entries(
+    Object.groupBy(absences, month),
+  ))
+    edit(Number(m) + 2, (xml) =>
+      monthAbsences!.reduce((x, a) => setCell(x, `J${row(a)}`, a.type), xml),
+    );
   return zipSync(files);
 }
