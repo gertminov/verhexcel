@@ -1,5 +1,5 @@
 //09:30 -> 9.5
-function toHours(value: string) {
+export function toHours(value: string) {
   const [h, m = "0"] = value.split(":");
   return parseFloat(h!) + parseFloat(m) / 60;
 }
