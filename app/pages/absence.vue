@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DateRange, DateValue } from "sit-onyx";
+import { type DateRange, type DateValue, useToast } from "sit-onyx";
 import { absenceTypes } from "~~/server/db/schema";
 import type {
   AbsencesQuery,
@@ -41,16 +41,27 @@ const typeOptions = absenceTypes.map((t) => ({
   label: `${t} – ${typeLabels[t]}`,
 }));
 
+const toast = useToast();
+
 async function save() {
   const { start, end = start } = selectedRange.value;
-  await $fetch("/api/absences", {
-    method: "PUT",
-    body: {
-      from: toISODate(new Date(start)),
-      to: toISODate(new Date(end)),
-      type: type.value,
-    } satisfies SaveAbsencesBody,
-  });
+  try {
+    await $fetch("/api/absences", {
+      method: "PUT",
+      body: {
+        from: toISODate(new Date(start)),
+        to: toISODate(new Date(end)),
+        type: type.value,
+      } satisfies SaveAbsencesBody,
+    });
+  } catch (e: any) {
+    toast.show({
+      headline: "Saving absence failed",
+      description: e.data?.message ?? e.message,
+      color: "danger",
+    });
+    return;
+  }
   await savedAbsences.refresh();
   selectedRange.value = { start: new Date(), end: new Date() };
   type.value = null;
