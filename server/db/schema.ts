@@ -1,4 +1,4 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { int, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -16,3 +16,19 @@ export const times = sqliteTable("times", {
   end: text().notNull(),
   date: text().notNull(),
 });
+
+// Codes match the "Code" column of the Stundenzettel template.
+export const absenceTypes = ["U", "UH", "K", "KR", "G"] as const;
+
+export const absences = sqliteTable(
+  "absences",
+  {
+    id: int().primaryKey({ autoIncrement: true }),
+    userId: int("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    date: text().notNull(),
+    type: text({ enum: absenceTypes }).notNull(),
+  },
+  (t) => [unique().on(t.userId, t.date)],
+);

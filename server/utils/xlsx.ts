@@ -49,6 +49,7 @@ export function fillTimesheet(
   year: number,
   name: string,
   entries: SimpleTimeEntry[],
+  absences: { date: string; type: string }[] = [],
 ) {
   const files = unzipSync(template);
   const edit = (sheet: number, fn: (xml: string) => string) => {
@@ -58,17 +59,20 @@ export function fillTimesheet(
 
   edit(1, (xml) => setCell(setCell(xml, "C2", year), "C3", name));
 
-  const byMonth = Object.groupBy(entries, (e) => Number(e.date.slice(5, 7)));
-  for (const [month, monthEntries] of Object.entries(byMonth)) {
-    edit(Number(month) + 2, (xml) => {
+  const month = (e: { date: string }) => Number(e.date.slice(5, 7));
+  const row = (e: { date: string }) => 3 + Number(e.date.slice(8, 10));
+  const byMonth = Object.groupBy(entries, month);
+  for (const [m, monthEntries] of Object.entries(byMonth)) {
+    edit(Number(m) + 2, (xml) => {
       const byDay = Object.groupBy(monthEntries!, (e) => e.date);
-      for (const [date, dayEntries] of Object.entries(byDay)) {
-        const row = 3 + Number(date.slice(8, 10));
+      for (const dayEntries of Object.values(byDay))
         for (const [col, value] of Object.entries(toDaySlots(dayEntries!)))
-          xml = setCell(xml, `${col}${row}`, value);
-      }
+          xml = setCell(xml, `${col}${row(dayEntries![0]!)}`, value);
       return xml;
     });
   }
+  // Absence code goes into the "Code" column J, the template derives target hours from it.
+  for (const a of absences)
+    edit(month(a) + 2, (xml) => setCell(xml, `J${row(a)}`, a.type));
   return zipSync(files);
 }
