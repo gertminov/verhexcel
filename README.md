@@ -1,75 +1,43 @@
-# Nuxt Minimal Starter
+# Verhexcel
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+time tracker which exports data to excel
+I wanted to try out sit-onyx ui library, my mother has to track her times in the excel sheet of hell
+this is the solution to both of these problems.
+
 
 ## Setup
 
-Make sure to install dependencies:
+install dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
+### Database
+
+create an empty `local.db` file
+
+push schema to database:
+```bash
+pnpm db:push
+```
+
+seed data
+```bash
+pnpm db:seed
+```
+
+### Environment Variables
+
+- set `NUXT_SESSION_PASSWORD` environment variable to a random string.
+- set `DEMO_TOKEN` to a string you can use to access the demo account
+- 
 ## Development Server
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
 # pnpm
 pnpm dev
 
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
