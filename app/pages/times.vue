@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TimeEntry, TimesQuery } from "#shared/types/time-entry.ts";
-import type { DateValue, TimeRange } from "sit-onyx";
+import { type DateValue, type TimeRange, useToast } from "sit-onyx";
 import { filterByDay, getNextWorkingDay, toISODate } from "~~/utils/date.ts";
 import {
   calcBreaks,
@@ -77,8 +77,18 @@ async function handleSave() {
   viewMonth.value = next
 }
 
+const toast = useToast();
+
 watch(selectedDate, async (newDate, oldDate) => {
-  await saveDay(oldDate, times.value);
+  try {
+    await saveDay(oldDate, times.value);
+  } catch (e: any) {
+    toast.show({
+      headline: `Saving ${toISODate(oldDate)} failed`,
+      description: e.data?.message ?? e.message,
+      color: "danger",
+    });
+  }
   times.value = getTimesForDay(newDate, serverTimes.value);
 });
 
