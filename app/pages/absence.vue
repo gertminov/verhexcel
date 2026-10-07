@@ -70,8 +70,8 @@ async function save() {
 
 <template>
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
-    <div>
-      <div>
+    <div class="max-w-xl mx-auto">
+      <div class="flex justify-center">
         <OnyxCalendar
           v-model="selectedRange"
           v-model:view-month="viewMonth"
@@ -98,8 +98,8 @@ async function save() {
       </div>
     </div>
     <template #footer>
-      <div class="px-8">
-        <OnyxButton label="Save" @click="save" class="w-full max-w-xl" />
+      <div class="max-w-xl mx-auto">
+        <OnyxButton label="Save" @click="save" class="w-full" />
       </div>
     </template>
   </OnyxPageLayout>
