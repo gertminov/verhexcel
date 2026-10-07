@@ -26,6 +26,11 @@ const query = computed<TimesQuery>(() => {
   };
 });
 const savedTimes = await useFetch("/api/times", { query });
+const savedAbsences = await useFetch("/api/absences", { query });
+const absentDates = computed(
+  () => new Set(savedAbsences.data.value?.map((a) => a.date)),
+);
+const isAbsent = (date: Date) => absentDates.value.has(toISODate(date));
 
 const emptyTimeEntry: () => SimpleTimeEntry = () => ({
   start: "",
@@ -90,6 +95,7 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         v-model:view-month="viewMonth"
         size="small"
         selection-mode="single"
+        :disabled="isAbsent"
         class="w-full max-w-xl"
       >
         <template #day="{ date  }">
