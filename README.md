@@ -23,7 +23,7 @@ cp .env.example .env
 
 ```bash
 pnpm db:push   # create schema
-pnpm db:seed   # dev only: wipes all users and inserts example data
+pnpm db:seed   # dev only: inserts example data, aborts if users exist
 ```
 
 ## Development Server

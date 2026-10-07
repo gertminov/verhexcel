@@ -1,8 +1,11 @@
-// Dev only: wipes users (times cascade) and inserts example data.
+// Dev only: inserts example data. Aborts if users table is not empty.
 import { db } from '../utils/db.ts'
 import { times, users } from './schema.ts'
 
-await db.delete(users)
+if ((await db.select({ id: users.id }).from(users).limit(1)).length) {
+  console.error('users table not empty, aborting seed')
+  process.exit(1)
+}
 
 const [alice, bob] = await db.insert(users).values([
   { name: 'Alice', email: 'alice@example.com', password: 'not-a-real-hash' },
