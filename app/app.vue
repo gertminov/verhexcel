@@ -6,6 +6,7 @@ const { user } = useUserSession();
     <template #navBar>
       <OnyxNavBar app-name="Verhexcel">
         <OnyxNavItem link="/times" label="Times" />
+        <OnyxNavItem link="/absence" label="Absence" />
         <OnyxNavItem link="/export" label="Export" />
         <template #globalContextArea>
           <div class="mx-4">
