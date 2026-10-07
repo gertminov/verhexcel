@@ -26,3 +26,5 @@ logs
 # Local SQLite
 *.db
 *.db-*
+
+Stundenzettel_2026_Heim.xlsx

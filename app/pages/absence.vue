@@ -6,7 +6,14 @@ import {toISODate} from "~~/utils/date.ts";
 
 const selectedRange = useState<DateRange>(() => ({start: new Date(), end: new Date()}));
 const type = ref<SaveAbsencesBody["type"]>(null);
-const typeOptions = absenceTypes.map((t) => ({value: t, label: t}));
+const typeLabels: Record<(typeof absenceTypes)[number], string> = {
+  U: "Urlaub",
+  UH: "Urlaub ½ Tag",
+  K: "Krank",
+  KR: "Krank Restzeit",
+  G: "Gleittag",
+};
+const typeOptions = absenceTypes.map((t) => ({value: t, label: `${t} – ${typeLabels[t]}`}));
 
 async function save() {
   const {start, end = start} = selectedRange.value;
