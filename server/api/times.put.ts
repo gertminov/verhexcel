@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { times } from "../db/schema";
-import { type TimeEntry, saveDayBody } from "~/shared/types/time-entry.ts";
+import { type TimeEntry, saveDayBody } from "#shared/types/time-entry.ts";
 
 export default defineEventHandler(async (event): Promise<TimeEntry[]> => {
   const { user } = await requireUserSession(event);

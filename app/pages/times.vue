@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TimeEntry, TimesQuery } from "~/shared/types/time-entry.ts";
+import type { TimeEntry, TimesQuery } from "#shared/types/time-entry.ts";
 import type { DateValue, TimeRange } from "sit-onyx";
 import { filterByDay, getNextWorkingDay, toISODate } from "~~/utils/date.ts";
 import {
@@ -74,6 +74,7 @@ async function handleSave() {
   let next = getNextWorkingDay(selectedDate.value);
   while (isAbsent(next)) next = getNextWorkingDay(next);
   selectedDate.value = next;
+  viewMonth.value = next
 }
 
 watch(selectedDate, async (newDate, oldDate) => {

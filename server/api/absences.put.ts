@@ -1,6 +1,6 @@
 import { and, between, eq } from "drizzle-orm";
 import { absences } from "../db/schema";
-import { type Absence, saveAbsencesBody } from "~/shared/types/absence.ts";
+import { type Absence, saveAbsencesBody } from "#shared/types/absence.ts";
 import { weekdays } from "../../utils/time.ts";
 
 // Replaces all absences in from..to with one entry per weekday.

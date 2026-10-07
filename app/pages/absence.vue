@@ -4,7 +4,7 @@ import { absenceTypes } from "~~/server/db/schema";
 import type {
   AbsencesQuery,
   SaveAbsencesBody,
-} from "~/shared/types/absence.ts";
+} from "#shared/types/absence.ts";
 import { toISODate } from "~~/utils/date.ts";
 
 definePageMeta({
