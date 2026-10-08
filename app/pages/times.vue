@@ -106,7 +106,8 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
 
 <template>
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
-    <div class="flex justify-center">
+    <div class="flex flex-col items-center">
+      <h2>Zeiten</h2>
       <OnyxCalendar
         v-model="selectedDate"
         v-model:view-month="viewMonth"

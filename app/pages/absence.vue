@@ -71,7 +71,8 @@ async function save() {
 <template>
   <OnyxPageLayout no-padding class="px-4 md:px-8 py-4">
     <div class="max-w-xl mx-auto">
-      <div class="flex justify-center">
+      <div class="flex flex-col items-center">
+        <h2>Abwesenheit</h2>
         <OnyxCalendar
           v-model="selectedRange"
           v-model:view-month="viewMonth"
@@ -91,8 +92,8 @@ async function save() {
       <div class="mt-4">
         <OnyxSelect
           v-model="type"
-          label="Absence type"
-          list-label="Absence types"
+          label="Abwesenheits Typ"
+          list-label="Abwesenheits typen"
           :options="typeOptions"
         />
       </div>

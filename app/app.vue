@@ -6,8 +6,8 @@ const { user, loggedIn } = useUserSession();
     <template #navBar>
       <OnyxNavBar app-name="Verhexcel">
         <template v-if="loggedIn" >
-          <OnyxNavItem link="/times" label="Times" />
-          <OnyxNavItem link="/absence" label="Absence" />
+          <OnyxNavItem link="/times" label="Zeiten" />
+          <OnyxNavItem link="/absence" label="Abwesenheit" />
           <OnyxNavItem link="/export" label="Export" />
         </template>
         <template #globalContextArea>
