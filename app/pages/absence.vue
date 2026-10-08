@@ -100,7 +100,7 @@ async function save() {
     </div>
     <template #footer>
       <div class="max-w-xl mx-auto">
-        <OnyxButton label="Save" @click="save" class="w-full" />
+        <OnyxButton label="Speichern" @click="save" class="w-full" />
       </div>
     </template>
   </OnyxPageLayout>

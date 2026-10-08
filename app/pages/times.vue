@@ -127,8 +127,8 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
     </div>
     <div class="pt-4 grow max-w-xl mx-auto">
       <div class="flex gap-4 justify-between">
-        <span> Time: {{ workingTime.toFixed(2) }} </span>
-        <span> Break: {{ breakTime.toFixed(2) }} </span>
+        <span> Arbeitszeit: {{ workingTime.toFixed(2) }} </span>
+        <span> Pause: {{ breakTime.toFixed(2) }} </span>
       </div>
       <div class="flex flex-col gap-2">
         <template
@@ -138,12 +138,12 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
           <div class="flex gap-4">
             <OnyxUnstableTimePicker
               v-model="time.start"
-              label="start"
+              label="Start"
               class="flex-1"
             />
             <OnyxUnstableTimePicker
               v-model="time.end"
-              label="end"
+              label="Ende"
               class="flex-1"
               @update:model-value="(e) => handleEndTimeChange(index, e)"
             />
@@ -153,8 +153,8 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
     </div>
     <template #footer>
       <div class="max-w-xl mx-auto">
-        <OnyxButton label="Save" class="w-full" @click="handleSave()"
-          >Save</OnyxButton
+        <OnyxButton label="Speichern" class="w-full" @click="handleSave()"
+          />
         >
       </div>
     </template>
