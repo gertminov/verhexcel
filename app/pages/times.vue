@@ -81,6 +81,7 @@ const toast = useToast();
 
 watch(selectedDate, async (newDate, oldDate) => {
   try {
+    if (savedTimes.pending.value) return
     await saveDay(oldDate, times.value);
   } catch (e: any) {
     toast.show({
@@ -131,23 +132,31 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
         <span> Pause: {{ breakTime.toFixed(2) }} </span>
       </div>
       <div class="flex flex-col gap-2">
-        <template
-          v-for="(time, index) in times"
-          :key="selectedDate.getTime() + index"
-        >
-          <div class="flex gap-4">
-            <OnyxUnstableTimePicker
-              v-model="time.start"
-              label="Start"
-              class="flex-1"
-            />
-            <OnyxUnstableTimePicker
-              v-model="time.end"
-              label="Ende"
-              class="flex-1"
-              @update:model-value="(e) => handleEndTimeChange(index, e)"
-            />
-          </div>
+<!--        <template v-if="savedTimes.pending.value">-->
+<!--          <div class="flex gap-4">-->
+<!--            <OnyxSkeleton class="h-8"/>-->
+<!--            <OnyxSkeleton class="h-8"/>-->
+<!--          </div>-->
+<!--        </template>-->
+<!--        <template v-else>-->
+          <template
+              v-for="(time, index) in times"
+              :key="selectedDate.getTime() + index"
+          >
+            <div class="flex gap-4">
+              <OnyxUnstableTimePicker
+                  v-model="time.start"
+                  label="Start"
+                  class="flex-1"
+              />
+              <OnyxUnstableTimePicker
+                  v-model="time.end"
+                  label="Ende"
+                  class="flex-1"
+                  @update:model-value="(e) => handleEndTimeChange(index, e)"
+              />
+            </div>
+<!--          </template>-->
         </template>
       </div>
     </div>
@@ -155,7 +164,6 @@ async function saveDay(date: Date, timeEntries: SimpleTimeEntry[]) {
       <div class="max-w-xl mx-auto">
         <OnyxButton label="Speichern" class="w-full" @click="handleSave()"
           />
-        >
       </div>
     </template>
   </OnyxPageLayout>
